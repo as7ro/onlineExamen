@@ -53,15 +53,28 @@ router.get('/examenjoin', (req, res) => {
 
 // get examen
 router.get('/:examen_id', (req, res) => {
-
   const promise = Examen.find({ 'id': req.params.examen_id });
-
-  promise.then((examen) => {
-    res.json(examen)
-  }).catch((err) => {
-    res.json(err)
-  });
-
+  const getList = (id) => {
+    const promise2 = QuestionList.find({ "id": id });
+    promise2.then((data) => {
+      getQuestion(data)
+    })
+  }
+  const getQuestion = (item) => {
+    let ids = item[0].questionIds.split(",")
+    var Idata = ids.map((elem) => {
+      return elem
+    })
+    Questions.find({ id: { $in: Idata } }).then((data2) => {
+      res.json(data2)
+    })
+  }
+  const getExample = async () => {
+    var examen = await promise.then((data) => {
+      getList(data[0].questionListId)
+    });
+  }
+  getExample();
 });
 //
 
